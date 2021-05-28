@@ -1,15 +1,15 @@
 import os
 import pygame
 
-CHARACTER_WIDTH=100
-CHARACTER_HEIGHT=125
+CHARACTER_WIDTH=80
+CHARACTER_HEIGHT=70
 WIDTH,HEIGHT =800,900
 FPS=60
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Jump On")
 
-CHARACTER_IMAGE=pygame.image.load(os.path.join('Assets','character.png'))
-CHARACTER=pygame.transform.scale(CHARACTER_IMAGE,(100,125))
+CHARACTER_IMAGE=pygame.image.load(os.path.join('Assets','player.png'))
+CHARACTER=pygame.transform.scale(CHARACTER_IMAGE,(80,70))
 
 def draw_window(player):
     WIN.fill((255,255,255))
@@ -18,7 +18,7 @@ def draw_window(player):
 
 
 def main(CHARACTER):
-    player=pygame.Rect(0,775,CHARACTER_WIDTH,CHARACTER_HEIGHT)
+    player=pygame.Rect(0,830,CHARACTER_WIDTH,CHARACTER_HEIGHT)
     clock= pygame.time.Clock()
     motion=True
     run=True
@@ -32,11 +32,8 @@ def main(CHARACTER):
         if player.x<700 and motion:
             player.x+= 1
         elif player.x<0:
-            CHARACTER=pygame.transform.rotate(CHARACTER, 90)
             motion=True
         else:
-            if motion:
-                CHARACTER=pygame.transform.rotate(CHARACTER, 90)
             player.x-= 1
             motion=False
 
