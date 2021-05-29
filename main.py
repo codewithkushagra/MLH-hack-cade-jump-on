@@ -40,19 +40,25 @@ def moveLeft(player):
 
 
 def jump(player,injump,count_jump):
-        if count_jump<40:
-            player-=2
+        if count_jump<30:
+            player-=4
             count_jump+=1
-            print("plus",count_jump)
             injump=True
         else:
             count_jump+=1
-            print("minus",count_jump)
-            player+=2
-        if count_jump==80:
+            player+=4
+        if count_jump==60:
             injump=False
             count_jump=0
         return player,injump,count_jump
+
+
+def updatePosition(player,PLAYERPOSITIONY,injump,count_jump):
+    if player==PLAYERPOSITIONY-(4*20) and count_jump>30:
+        PLAYERPOSITIONY=PLAYERPOSITIONY-(4*20)
+        return PLAYERPOSITIONY,PLAYERPOSITIONY,False,0
+    else:
+        return player,PLAYERPOSITIONY,injump,count_jump
 
 
 def draw_window(evil,player):
@@ -63,7 +69,7 @@ def draw_window(evil,player):
 
 
 
-def main():
+def main(PLAYERPOSITIONY):
     evil=pygame.Rect(0,EVILPOSITIONY,EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT)
     player=pygame.Rect(350,PLAYERPOSITIONY,CHARACTER_WIDTH,CHARACTER_HEIGHT)
     clock= pygame.time.Clock()
@@ -80,6 +86,9 @@ def main():
         draw_window(evil,player)
 
         keys_pressed=pygame.key.get_pressed()
+        
+        player.y,PLAYERPOSITIONY,injump,count_jump=updatePosition(player.y,PLAYERPOSITIONY,injump,count_jump)
+
         if keys_pressed[pygame.K_RIGHT]:
             player.x=moveRight(player.x)
         elif keys_pressed[pygame.K_LEFT]:
@@ -87,8 +96,9 @@ def main():
         evil.x,motion=moveEvilX(evil.x,motion)
 
         if keys_pressed[pygame.K_UP] or injump:
-            player.y,injump,count_jump=jump(player.y,injump,count_jump)    
+            player.y,injump,count_jump=jump(player.y,injump,count_jump)
+
     pygame.quit()
 
 if __name__ == "__main__":
-    main()
+    main(PLAYERPOSITIONY)
