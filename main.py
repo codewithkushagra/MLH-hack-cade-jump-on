@@ -12,6 +12,7 @@ EVILCHARACTER_HEIGHT=100
 CHARACTER_WIDTH=80
 CHARACTER_HEIGHT=70
 WIDTH,HEIGHT =800,700
+BRICK_HEIGHT=20
 FPS=60
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Jump On")
@@ -23,6 +24,8 @@ EVILCHARACTER=pygame.transform.scale(EVILCHARACTER_IMAGE,(EVILCHARACTER_WIDTH,EV
 COIN_IMAGE=pygame.image.load(os.path.join('Assets','coin.png'))
 COIN=pygame.transform.scale(COIN_IMAGE,(COIN_WIDTH,COIN_HEIGHT))
 BACKGROUND=pygame.image.load(os.path.join('Assets','background.png'))
+BRICK_IMAGE=pygame.image.load(os.path.join('Assets','brick.png'))
+BRICK=pygame.transform.scale(BRICK_IMAGE,(WIDTH,BRICK_HEIGHT))
 
 
 # SCORE_TEXT=pygame.font.FONT
@@ -85,6 +88,7 @@ def checkGame(evil,player):
 def drawWindow(evil,player):
     if not GAMEOVER:
         WIN.blit(BACKGROUND,(-80,0))
+        WIN.blit(BRICK,(0,620))
         WIN.blit(COIN,(0,0))
         WIN.blit(EVILCHARACTER,(evil.x,evil.y))
         WIN.blit(CHARACTER,(player.x,player.y))
