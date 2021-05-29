@@ -1,15 +1,15 @@
 import os
 import pygame
 
-PLAYERPOSITIONY =630
-EVILPOSITIONY =625
+PLAYERPOSITIONY =637
+EVILPOSITIONY =624
 SCORE=0
 GAMEOVER=False
 COIN_WIDTH,COIN_HEIGHT = 30,30
 EVILCHARACTER_WIDTH=100
 EVILCHARACTER_HEIGHT=100
-CHARACTER_WIDTH=80
-CHARACTER_HEIGHT=70
+CHARACTER_WIDTH=69
+CHARACTER_HEIGHT=60
 WIDTH,HEIGHT =800,700
 BRICK_HEIGHT=20
 FPS=60
@@ -25,6 +25,8 @@ COIN=pygame.transform.scale(COIN_IMAGE,(COIN_WIDTH,COIN_HEIGHT))
 BACKGROUND=pygame.image.load(os.path.join('Assets','background.png'))
 BRICK_IMAGE=pygame.image.load(os.path.join('Assets','brick.png'))
 BRICK=pygame.transform.scale(BRICK_IMAGE,(WIDTH,BRICK_HEIGHT))
+BRICKBLOCK_IMAGE=pygame.image.load(os.path.join('Assets','brick-block.png'))
+HALFBRICK=pygame.transform.scale(HALFBRICK_IMAGE,(int(WIDTH/2),BRICK_HEIGHT))
 
 
 # SCORE_TEXT=pygame.font.FONT
@@ -32,14 +34,14 @@ BRICK=pygame.transform.scale(BRICK_IMAGE,(WIDTH,BRICK_HEIGHT))
 def moveEvilX(evil,motion):
     global EVILCHARACTER
     if evil<700 and motion:
-        evil+= 1
+        evil+= 2
     elif evil<0:
         EVILCHARACTER=pygame.transform.flip(EVILCHARACTER,True,False)
         motion=True
     else:
         if evil==700:
             EVILCHARACTER=pygame.transform.flip(EVILCHARACTER,True,False)
-        evil-= 1
+        evil-= 2
         motion=False
     return evil,motion
 
@@ -55,21 +57,21 @@ def moveLeft(player):
 
 
 def jump(player,injump,count_jump):
-        if count_jump<30:
+        if count_jump<23:
             player-=4
             count_jump+=1
             injump=True
         else:
             count_jump+=1
             player+=4
-        if count_jump==60:
+        if count_jump==46:
             injump=False
             count_jump=0
         return player,injump,count_jump
 
 
 def updatePosition(player,PLAYERPOSITIONY,injump,count_jump):
-    if player==PLAYERPOSITIONY-(4*20) and count_jump>30:
+    if player==PLAYERPOSITIONY-(4*20) and count_jump>23:
         PLAYERPOSITIONY=PLAYERPOSITIONY-(4*20)
         global SCORE
         SCORE+=10
@@ -79,15 +81,23 @@ def updatePosition(player,PLAYERPOSITIONY,injump,count_jump):
 
 
 def checkGame(evil,player):
-    if((evil.x-62==player.x or evil.x+62==player.x) and evil.y+5==player.y):
+    
+    if((evil.x-50==player.x or evil.x+50==player.x or evil.x-51==player.x or evil.x+51==player.x or evil.x-52==player.x or evil.x+52==player.x) and evil.y+13==player.y):
         global GAMEOVER
         GAMEOVER =True
 
+    
 
 def drawWindow(evil,player):
     if not GAMEOVER:
         WIN.blit(BACKGROUND,(-80,0))
-        WIN.blit(BRICK,(0,620))
+        l=692
+        for i in range(7):
+            if(i==3):
+                WIN.blit(HALFBRICK,(WIDTH/2,l))
+            else:
+                WIN.blit(BRICK,(0,l))
+            l-=80
         WIN.blit(COIN,(0,0))
         WIN.blit(EVILCHARACTER,(evil.x,evil.y))
         WIN.blit(CHARACTER,(player.x,player.y))
@@ -98,6 +108,7 @@ def drawWindow(evil,player):
 
 
 def main(PLAYERPOSITIONY):
+    listevil=[pygame.Rect(0,EVILPOSITIONY,EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT)]
     evil=pygame.Rect(0,EVILPOSITIONY,EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT)
     player=pygame.Rect(350,PLAYERPOSITIONY,CHARACTER_WIDTH,CHARACTER_HEIGHT)
     clock= pygame.time.Clock()
@@ -112,19 +123,19 @@ def main(PLAYERPOSITIONY):
                 run=False
         checkGame(evil,player)
         drawWindow(evil,player)
-        print(SCORE)
         keys_pressed=pygame.key.get_pressed()
         
         
 
-        player.y,PLAYERPOSITIONY,injump,count_jump=updatePosition(player.y,PLAYERPOSITIONY,injump,count_jump)
+        if player.y>=40:
+            player.y,PLAYERPOSITIONY,injump,count_jump=updatePosition(player.y,PLAYERPOSITIONY,injump,count_jump)
 
         if keys_pressed[pygame.K_RIGHT]:
             player.x=moveRight(player.x)
         elif keys_pressed[pygame.K_LEFT]:
             player.x=moveLeft(player.x)
 
-        if keys_pressed[pygame.K_UP] or injump:
+        if (keys_pressed[pygame.K_UP] or injump):
             player.y,injump,count_jump=jump(player.y,injump,count_jump)
 
         evil.x,motion=moveEvilX(evil.x,motion)
