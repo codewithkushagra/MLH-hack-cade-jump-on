@@ -1,5 +1,6 @@
 import os
 import pygame
+COIN_SCORE=0
 FLOOR=1
 PLAYERPOSITIONY =637
 EVILPOSITIONY =624
@@ -40,6 +41,14 @@ class Evil:
         self.image=image
         self.floor=floor
         self.motion=motion
+
+class Coin:
+
+    def __init__(self,x,y,collected,image):
+        self.x=x
+        self.y=y
+        self.collected=collected
+        self.image=image
 
 
 def moveEvilX(evil,motion):
@@ -100,21 +109,28 @@ def updatePosition(player,PLAYERPOSITIONY,injump,count_jump):
     else:
         return player,PLAYERPOSITIONY,injump,count_jump
 
-
+def checkCoin(coinList,player):
+        xlim=[]
+        for i in range(player.x+5,player.x+30):
+            xlim.append(i)
+        for coin in coinList:
+            if coin.x in xlim and coin.y ==player.y:
+                coin.collected=True
+                coin.image=None
+                global COIN_SCORE
+                COIN_SCORE+=1
+    
 def checkGame(evillist,player):
     if FLOOR<7:
         evil=evillist[FLOOR-1]
         if evil.x!=None:
-            print(f"evil.x: {evil.x+50} {evil.x-50} player.x: {player.x}")
             if((evil.x-50==player.x or evil.x+50==player.x or evil.x-51==player.x or evil.x+51==player.x or evil.x-52==player.x or evil.x+52==player.x) and (evil.y+13==player.y or evil.y+14==player.y or evil.y+12==player.y or evil.y+15==player.y or evil.y+11==player.y)):
-                
-                print("--------------------------------------------------------------------------------")
                 global GAMEOVER
                 GAMEOVER =True
     return
                 
 
-def drawWindow(evillist,player):             #coins at 492
+def drawWindow(evillist,player,coinList):             #coins at 492
     if not GAMEOVER:
         WIN.blit(BACKGROUND,(-80,0))
         l=692
@@ -124,8 +140,9 @@ def drawWindow(evillist,player):             #coins at 492
             else:
                 WIN.blit(BRICK,(0,l))
             l-=80
-        for i in range(6):
-            WIN.blit(COIN,(i*60,402))
+        for coin in coinList:
+            if not coin.collected:
+                WIN.blit(coin.image,(coin.x,coin.y))
         WIN.blit(TREASURE,(-60,110))
         for i in range(6):
             if i != 2:
@@ -139,7 +156,6 @@ def drawWindow(evillist,player):             #coins at 492
         WIN.fill((225,225,219))
         pygame.display.update()
         while run:
-            print("QUIT")
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run=False
@@ -158,7 +174,10 @@ def main(PLAYERPOSITIONY):
         else:
             evil=Evil()
             evillist.append(evil)
-    
+    coinList=[]
+    for i in range(1,6):
+        coin=Coin(i*60,401,False,COIN)
+        coinList.append(coin)
 ##    evil=pygame.Rect(0,EVILPOSITIONY,EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT)
     player=pygame.Rect(350,PLAYERPOSITIONY,CHARACTER_WIDTH,CHARACTER_HEIGHT)
     clock= pygame.time.Clock()
@@ -172,7 +191,9 @@ def main(PLAYERPOSITIONY):
             if event.type == pygame.QUIT:
                 run=False
         checkGame(evillist,player)
-        drawWindow(evillist,player)
+        drawWindow(evillist,player,coinList)
+        if FLOOR==3 or FLOOR==4:
+            checkCoin(coinList,player)
         keys_pressed=pygame.key.get_pressed()
         
         
