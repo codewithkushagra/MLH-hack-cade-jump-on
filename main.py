@@ -1,7 +1,6 @@
 import os
 import pygame
 
-
 PLAYERPOSITIONY =630
 EVILPOSITIONY =625
 SCORE=0
