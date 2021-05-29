@@ -2,6 +2,7 @@ import os
 import pygame
 
 PLAYERPOSITIONY =830
+GAMEOVER=False
 EVILPOSITIONY =825
 EVILCHARACTER_WIDTH=100
 EVILCHARACTER_HEIGHT=100
@@ -61,10 +62,19 @@ def updatePosition(player,PLAYERPOSITIONY,injump,count_jump):
         return player,PLAYERPOSITIONY,injump,count_jump
 
 
-def draw_window(evil,player):
-    WIN.fill((255,255,255))
-    WIN.blit(EVILCHARACTER,(evil.x,evil.y))
-    WIN.blit(CHARACTER,(player.x,player.y))
+def checkGame(evil,player):
+    if((evil.x-62==player.x or evil.x+62==player.x) and evil.y+5==player.y):
+        global GAMEOVER
+        GAMEOVER =True
+
+
+def drawWindow(evil,player):
+    if not GAMEOVER:
+        WIN.fill((255,255,255))
+        WIN.blit(EVILCHARACTER,(evil.x,evil.y))
+        WIN.blit(CHARACTER,(player.x,player.y))
+    else:
+        WIN.fill((255,255,100))
     pygame.display.update()
 
 
@@ -82,11 +92,12 @@ def main(PLAYERPOSITIONY):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run=False
-
-        draw_window(evil,player)
+        checkGame(evil,player)
+        drawWindow(evil,player)
 
         keys_pressed=pygame.key.get_pressed()
         
+
         player.y,PLAYERPOSITIONY,injump,count_jump=updatePosition(player.y,PLAYERPOSITIONY,injump,count_jump)
 
         if keys_pressed[pygame.K_RIGHT]:
