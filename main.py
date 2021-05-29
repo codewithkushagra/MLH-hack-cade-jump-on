@@ -22,6 +22,9 @@ EVILCHARACTER_IMAGE=pygame.image.load(os.path.join('Assets','evil.png'))
 EVILCHARACTER=pygame.transform.scale(EVILCHARACTER_IMAGE,(EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT))
 COIN_IMAGE=pygame.image.load(os.path.join('Assets','coin.png'))
 COIN=pygame.transform.scale(COIN_IMAGE,(COIN_WIDTH,COIN_HEIGHT))
+BACKGROUND=pygame.image.load(os.path.join('Assets','background.png'))
+
+
 # SCORE_TEXT=pygame.font.FONT
 
 def moveEvilX(evil,motion):
@@ -81,7 +84,7 @@ def checkGame(evil,player):
 
 def drawWindow(evil,player):
     if not GAMEOVER:
-        WIN.fill((255,255,255))
+        WIN.blit(BACKGROUND,(-80,0))
         WIN.blit(COIN,(0,0))
         WIN.blit(EVILCHARACTER,(evil.x,evil.y))
         WIN.blit(CHARACTER,(player.x,player.y))
