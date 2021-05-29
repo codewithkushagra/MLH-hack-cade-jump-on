@@ -1,6 +1,6 @@
 import os
 import pygame
-
+FLOOR=1
 PLAYERPOSITIONY =637
 EVILPOSITIONY =624
 SCORE=0
@@ -26,34 +26,49 @@ BACKGROUND=pygame.image.load(os.path.join('Assets','background.png'))
 BRICK_IMAGE=pygame.image.load(os.path.join('Assets','brick.png'))
 BRICK=pygame.transform.scale(BRICK_IMAGE,(WIDTH,BRICK_HEIGHT))
 BRICKBLOCK_IMAGE=pygame.image.load(os.path.join('Assets','brick-block.png'))
-HALFBRICK=pygame.transform.scale(HALFBRICK_IMAGE,(int(WIDTH/2),BRICK_HEIGHT))
-
+BRICKBLOCK=pygame.transform.scale(BRICKBLOCK_IMAGE,(int(WIDTH/2),80))
+TREASURE_IMAGE=pygame.image.load(os.path.join('Assets','treasure.png'))
+TREASURE=pygame.transform.scale(TREASURE_IMAGE,(250,150))   
 
 # SCORE_TEXT=pygame.font.FONT
 
+class Evil:
+
+    def __init__(self,motion=True,x=-60,y=-60,image=0,evilbox=0,floor=0):
+        self.x=x
+        self.y=y
+        self.image=image
+        self.evilbox=evilbox
+        self.floor=floor
+        self.motion=motion
+
+
 def moveEvilX(evil,motion):
-    global EVILCHARACTER
-    if evil<700 and motion:
-        evil+= 2
-    elif evil<0:
-        EVILCHARACTER=pygame.transform.flip(EVILCHARACTER,True,False)
+    if evil.x<700 and motion:
+        evil.x+= 2
+    elif evil.x<0:
+        evil.image=pygame.transform.flip(evil.image,True,False)
         motion=True
     else:
-        if evil==700:
-            EVILCHARACTER=pygame.transform.flip(EVILCHARACTER,True,False)
-        evil-= 2
+        if evil.x==700:
+            evil.image=pygame.transform.flip(evil.image,True,False)
+        evil.x-= 2
         motion=False
     return evil,motion
 
 def moveRight(player):
-    if player<700:
-        player=player+2
-    return player
+    if player.y==477:
+        if player.x<340:
+            player.x=player.x+2
+    else:
+        if player.x<700:
+            player.x=player.x+2
+    return player.x
 
 def moveLeft(player):
-    if player>0:
-        player=player-2
-    return player
+    if player.x>0:
+        player.x=player.x-2
+    return player.x
 
 
 def jump(player,injump,count_jump):
@@ -75,31 +90,45 @@ def updatePosition(player,PLAYERPOSITIONY,injump,count_jump):
         PLAYERPOSITIONY=PLAYERPOSITIONY-(4*20)
         global SCORE
         SCORE+=10
+        global FLOOR
+        FLOOR+=1
         return PLAYERPOSITIONY,PLAYERPOSITIONY,False,0
     else:
         return player,PLAYERPOSITIONY,injump,count_jump
 
 
-def checkGame(evil,player):
-    
+def checkGame(evillist,player):
+    for i in range(5):
+        if(evillist[i].floor==FLOOR):
+            evil=evillist[i]
+            break
+        else:
+            evil=Evil()  
     if((evil.x-50==player.x or evil.x+50==player.x or evil.x-51==player.x or evil.x+51==player.x or evil.x-52==player.x or evil.x+52==player.x) and evil.y+13==player.y):
+        print(f"Evil Encountered on floor: {evil.floor}")
         global GAMEOVER
         GAMEOVER =True
 
     
 
-def drawWindow(evil,player):
+def drawWindow(evillist,player):             #coins at 492
     if not GAMEOVER:
         WIN.blit(BACKGROUND,(-80,0))
         l=692
         for i in range(7):
             if(i==3):
-                WIN.blit(HALFBRICK,(WIDTH/2,l))
+                WIN.blit(BRICKBLOCK,(WIDTH/2,l))
             else:
                 WIN.blit(BRICK,(0,l))
             l-=80
-        WIN.blit(COIN,(0,0))
-        WIN.blit(EVILCHARACTER,(evil.x,evil.y))
+        for i in range(6):
+            WIN.blit(COIN,(i*60,402))
+        WIN.blit(TREASURE,(-60,110))
+        for i in range(5):
+            x=evillist[i].x
+            y=evillist[i].y
+            WIN.blit(evillist[i].image,(x,y))
+        
         WIN.blit(CHARACTER,(player.x,player.y))
     else:
         WIN.fill((255,255,100))
@@ -108,12 +137,18 @@ def drawWindow(evil,player):
 
 
 def main(PLAYERPOSITIONY):
-    listevil=[pygame.Rect(0,EVILPOSITIONY,EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT)]
-    evil=pygame.Rect(0,EVILPOSITIONY,EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT)
+#    listevil=[pygame.Rect(0,EVILPOSITIONY,EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT),pygame.Rect(40,EVILPOSITIONY+80,EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT)]
+    evillist=[]
+    for i in range(6):
+        if i != 2:
+            evilbox=pygame.Rect(100*i,EVILPOSITIONY-(i*80),EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT)
+            evil=Evil(True,100*i,EVILPOSITIONY-(i*80),EVILCHARACTER,evilbox,i+1)
+            evillist.append(evil)
+    
+##    evil=pygame.Rect(0,EVILPOSITIONY,EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT)
     player=pygame.Rect(350,PLAYERPOSITIONY,CHARACTER_WIDTH,CHARACTER_HEIGHT)
     clock= pygame.time.Clock()
     count_jump=0
-    motion=True
     injump=False
     run=True
     while run:
@@ -121,24 +156,34 @@ def main(PLAYERPOSITIONY):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run=False
-        checkGame(evil,player)
-        drawWindow(evil,player)
+        checkGame(evillist,player)
+        drawWindow(evillist,player)
         keys_pressed=pygame.key.get_pressed()
         
         
 
-        if player.y>=40:
-            player.y,PLAYERPOSITIONY,injump,count_jump=updatePosition(player.y,PLAYERPOSITIONY,injump,count_jump)
+        if player.y>=80:
+            if player.y==397 and player.x<340:
+                pass
+            elif player.y==397 and player.x>340:    
+                player.y,PLAYERPOSITIONY,injump,count_jump=updatePosition(player.y,PLAYERPOSITIONY,injump,count_jump)
+            else:
+                player.y,PLAYERPOSITIONY,injump,count_jump=updatePosition(player.y,PLAYERPOSITIONY,injump,count_jump)
+                
 
+            
         if keys_pressed[pygame.K_RIGHT]:
-            player.x=moveRight(player.x)
+            player.x=moveRight(player)
         elif keys_pressed[pygame.K_LEFT]:
-            player.x=moveLeft(player.x)
+            player.x=moveLeft(player)
 
-        if (keys_pressed[pygame.K_UP] or injump):
-            player.y,injump,count_jump=jump(player.y,injump,count_jump)
+        if (player.y==557 and player.x<340) or player.y!=557:
+            if (keys_pressed[pygame.K_UP] or injump):
+                player.y,injump,count_jump=jump(player.y,injump,count_jump)
 
-        evil.x,motion=moveEvilX(evil.x,motion)
+        
+        for evil in evillist:
+            evil,evil.motion=moveEvilX(evil,evil.motion)
 
     pygame.quit()
 
