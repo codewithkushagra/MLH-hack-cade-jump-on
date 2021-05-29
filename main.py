@@ -1,9 +1,12 @@
 import os
 import pygame
 
+
 PLAYERPOSITIONY =630
-GAMEOVER=False
 EVILPOSITIONY =625
+SCORE=0
+GAMEOVER=False
+COIN_WIDTH,COIN_HEIGHT = 30,30
 EVILCHARACTER_WIDTH=100
 EVILCHARACTER_HEIGHT=100
 CHARACTER_WIDTH=80
@@ -17,7 +20,9 @@ CHARACTER_IMAGE=pygame.image.load(os.path.join('Assets','player.png'))
 CHARACTER=pygame.transform.scale(CHARACTER_IMAGE,(CHARACTER_WIDTH,CHARACTER_HEIGHT))
 EVILCHARACTER_IMAGE=pygame.image.load(os.path.join('Assets','evil.png'))
 EVILCHARACTER=pygame.transform.scale(EVILCHARACTER_IMAGE,(EVILCHARACTER_WIDTH,EVILCHARACTER_HEIGHT))
-
+COIN_IMAGE=pygame.image.load(os.path.join('Assets','coin.png'))
+COIN=pygame.transform.scale(COIN_IMAGE,(COIN_WIDTH,COIN_HEIGHT))
+# SCORE_TEXT=pygame.font.FONT
 
 def moveEvilX(evil,motion):
     global EVILCHARACTER
@@ -61,6 +66,8 @@ def jump(player,injump,count_jump):
 def updatePosition(player,PLAYERPOSITIONY,injump,count_jump):
     if player==PLAYERPOSITIONY-(4*20) and count_jump>30:
         PLAYERPOSITIONY=PLAYERPOSITIONY-(4*20)
+        global SCORE
+        SCORE+=10
         return PLAYERPOSITIONY,PLAYERPOSITIONY,False,0
     else:
         return player,PLAYERPOSITIONY,injump,count_jump
@@ -75,6 +82,7 @@ def checkGame(evil,player):
 def drawWindow(evil,player):
     if not GAMEOVER:
         WIN.fill((255,255,255))
+        WIN.blit(COIN,(0,0))
         WIN.blit(EVILCHARACTER,(evil.x,evil.y))
         WIN.blit(CHARACTER,(player.x,player.y))
     else:
@@ -98,8 +106,9 @@ def main(PLAYERPOSITIONY):
                 run=False
         checkGame(evil,player)
         drawWindow(evil,player)
-
+        print(SCORE)
         keys_pressed=pygame.key.get_pressed()
+        
         
 
         player.y,PLAYERPOSITIONY,injump,count_jump=updatePosition(player.y,PLAYERPOSITIONY,injump,count_jump)
