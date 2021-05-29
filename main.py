@@ -1,14 +1,14 @@
 import os
 import pygame
 
-PLAYERPOSITIONY =830
+PLAYERPOSITIONY =630
 GAMEOVER=False
-EVILPOSITIONY =825
+EVILPOSITIONY =625
 EVILCHARACTER_WIDTH=100
 EVILCHARACTER_HEIGHT=100
 CHARACTER_WIDTH=80
 CHARACTER_HEIGHT=70
-WIDTH,HEIGHT =800,900
+WIDTH,HEIGHT =800,700
 FPS=60
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Jump On")
@@ -20,11 +20,15 @@ EVILCHARACTER=pygame.transform.scale(EVILCHARACTER_IMAGE,(EVILCHARACTER_WIDTH,EV
 
 
 def moveEvilX(evil,motion):
+    global EVILCHARACTER
     if evil<700 and motion:
         evil+= 1
     elif evil<0:
+        EVILCHARACTER=pygame.transform.flip(EVILCHARACTER,True,False)
         motion=True
     else:
+        if evil==700:
+            EVILCHARACTER=pygame.transform.flip(EVILCHARACTER,True,False)
         evil-= 1
         motion=False
     return evil,motion
@@ -104,10 +108,11 @@ def main(PLAYERPOSITIONY):
             player.x=moveRight(player.x)
         elif keys_pressed[pygame.K_LEFT]:
             player.x=moveLeft(player.x)
-        evil.x,motion=moveEvilX(evil.x,motion)
 
         if keys_pressed[pygame.K_UP] or injump:
             player.y,injump,count_jump=jump(player.y,injump,count_jump)
+
+        evil.x,motion=moveEvilX(evil.x,motion)
 
     pygame.quit()
 
