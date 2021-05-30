@@ -14,7 +14,7 @@
 - Then second is a **main.py** file which contains the main code of our game
 
 
-## Install, Play, Enjoy and improve if you find any bugs or you wanna add to our code base :)
+**Install, Play, Enjoy and improve if you find any bugs or you wanna add to our code base :)**
 
-## Happy Hacking!!!
-## Thank You, MLH for conducting this Hack-CADE Hackathon
+**Happy Hacking!!!**
+**Thank You, MLH for conducting this Hack-CADE Hackathon**
